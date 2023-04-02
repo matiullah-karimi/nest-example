@@ -6,6 +6,9 @@ import { ReportsModule } from './reports/reports.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './users/user.entity';
 import { Report } from './reports/report.entity';
+import { AuthModule } from './auth/auth.module';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { ParseJwtToken } from './core/interceptors/token-parser.interceptor';
 
 @Module({
   imports: [
@@ -15,8 +18,12 @@ import { Report } from './reports/report.entity';
       entities: [User, Report],
       synchronize: true
     }),
-    UsersModule, ReportsModule],
+    UsersModule, ReportsModule, AuthModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, 
+  {
+    provide: APP_INTERCEPTOR,
+    useClass: ParseJwtToken
+  }],
 })
 export class AppModule {}
