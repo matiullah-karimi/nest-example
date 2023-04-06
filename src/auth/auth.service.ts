@@ -24,7 +24,7 @@ export class AuthService {
             throw new UnauthorizedException('Invalid email or password');
         }
 
-        const payload = { email: user.email, sub: user.id };
+        const payload = { email: user.email, id: user.id };
 
         const jwtToken = await this.jwtService.signAsync(payload);
 
