@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
@@ -8,7 +8,7 @@ import { User } from './users/user.entity';
 import { Report } from './reports/report.entity';
 import { AuthModule } from './auth/auth.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
-import { ParseJwtToken } from './core/interceptors/token-parser.interceptor';
+import { ParseJwtToken } from './core/middlewares/token-parser.middleware';
 
 @Module({
   imports: [
@@ -20,10 +20,10 @@ import { ParseJwtToken } from './core/interceptors/token-parser.interceptor';
     }),
     UsersModule, ReportsModule, AuthModule],
   controllers: [AppController],
-  providers: [AppService, 
-  {
-    provide: APP_INTERCEPTOR,
-    useClass: ParseJwtToken
-  }],
+  providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(ParseJwtToken).forRoutes('*');
+  }
+}
