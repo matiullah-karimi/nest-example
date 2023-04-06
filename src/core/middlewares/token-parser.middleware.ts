@@ -2,6 +2,15 @@ import { Injectable, NestMiddleware } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { NextFunction, Request } from 'express';
 import { jwtConstants } from "src/auth/constants";
+import { User } from "src/users/user.entity";
+
+declare global {
+  namespace Express {
+    interface Request {
+      user?: User
+    }
+  }
+}
 
 @Injectable()
 export class ParseJwtToken implements NestMiddleware {
@@ -17,7 +26,7 @@ export class ParseJwtToken implements NestMiddleware {
     try {
       const payload = await this.jwtService.verifyAsync(token, { secret: jwtConstants.secret });
 
-      request['payload'] = payload;
+      request.user = payload;
     } catch { }
 
     return next();
